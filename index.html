@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RESULTA JEUX – Loto, EuroMillions, EuroDreams, Quinté+, Loto Foot</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--txt:#14213d;--mut:#667085;--bd:#e3e8f2;--pri:#1d4ed8;--acc:#f59e0b;--ok:#16a34a;--ball:#fff;--ballt:#14213d;--bar:#93b4f8;--hot:#ef4444;--cold:#3b82f6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1424;--card:#16203a;--txt:#eef2ff;--mut:#9aa7c7;--bd:#25314f;--pri:#6b93ff;--ball:#222f52;--ballt:#fff;--bar:#3d5bb5}}
+:root[data-theme="dark"]{--bg:#0d1424;--card:#16203a;--txt:#eef2ff;--mut:#9aa7c7;--bd:#25314f;--pri:#6b93ff;--ball:#222f52;--ballt:#fff;--bar:#3d5bb5}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:linear-gradient(135deg,#1d4ed8,#7c3aed 60%,#0891b2);color:#fff;padding:22px 16px}
+.w{max-width:980px;margin:0 auto;padding:0 14px}
+header h1{margin:0;font-size:1.55rem}header p{margin:4px 0 0;opacity:.92;font-size:.95rem}
+.gm{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}.gm a{padding:9px 16px;border-radius:999px;font-weight:600;text-decoration:none;border:1px solid rgba(255,255,255,.55);color:#fff;background:rgba(255,255,255,.16)}.gm a.on{background:#fff;color:#1d4ed8;border-color:#fff}
+nav{display:flex;gap:8px;margin:16px 0;flex-wrap:wrap}
+nav button,.btn{border:1px solid var(--bd);background:var(--card);color:var(--txt);padding:9px 15px;border-radius:10px;font:inherit;cursor:pointer}
+nav button.on,.btn.pri{background:var(--pri);color:#fff;border-color:var(--pri)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
+h2{margin:0 0 10px;font-size:1.15rem}
+.balls{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.b{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:var(--ball);color:var(--ballt);border:2px solid var(--pri)}
+.b.st{background:var(--acc);border-color:var(--acc);color:#1b1b1b}.b.w{background:var(--pri);color:#fff}.b.g{border-color:var(--ok)}
+.b.s{width:32px;height:32px;font-size:.85rem}.plus{color:var(--mut);font-weight:700}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;align-items:start}
+.home{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:700px){.row,.home{grid-template-columns:1fr}}
+.mut{color:var(--mut);font-size:.9rem}.cd{font-size:1.5rem;font-weight:700;color:var(--pri)}
+.gc h2{display:flex;justify-content:space-between;align-items:center}
+.banner{background:#fef3c7;color:#78350f;border:1px solid #f59e0b;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.dayb{display:flex;gap:6px;flex-wrap:wrap;margin:-6px 0 14px}.dayb button{border:1px solid var(--bd);background:var(--card);color:var(--txt);padding:6px 12px;border-radius:999px;font:inherit;font-size:.9rem;cursor:pointer}.dayb button.on{background:var(--acc);border-color:var(--acc);color:#1b1b1b;font-weight:600}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%}th,td{padding:9px 8px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}th{color:var(--mut);font-weight:600;font-size:.85rem}
+input,select{font:inherit;padding:9px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--txt)}
+.nums{display:flex;gap:6px;flex-wrap:wrap}.nums input{width:62px;text-align:center}
+.freq{display:grid;gap:2px;align-items:end;height:130px}.freq div{background:var(--bar);border-radius:3px 3px 0 0;min-height:2px}.freq div.h{background:var(--hot)}.freq div.k{background:var(--cold)}
+.lab{display:grid;gap:2px;font-size:.55rem;color:var(--mut);text-align:center}
+.hide{display:none}.msg{margin-top:8px;font-size:.92rem}.err{color:#dc2626}.good{color:var(--ok)}
+footer{padding:20px 14px 30px;text-align:center;color:var(--mut);font-size:.82rem}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+<header><div class="w"><h1>🎯 RESULTA JEUX</h1><p>Tous vos résultats au même endroit : Loto, EuroMillions, EuroDreams, Quinté+ et Loto Foot.</p>
+<div class="gm" id="gm"></div></div></header>
+<main class="w">
+<section id="home"><div class="home" id="hc"></div>
+<p class="mut" id="sync">Synchronisation avec les archives officielles FDJ…</p><p><button class="btn" id="syncb">🔄 Actualiser maintenant</button></p>
+<p class="mut">Loto, EuroMillions et EuroDreams se mettent à jour automatiquement. Quinté+ et Loto Foot restent à saisir à la main (pas d’archive officielle FDJ). Vos ajouts sont conservés dans votre navigateur.</p></section>
+<section id="game" class="hide">
+<p class="mut" id="sync2" style="margin:0 0 8px"></p>
+<div id="banner"></div>
+<nav id="tabs"><button class="on" data-t="res">Résultats</button><button data-t="jour">Par jour</button><button data-t="sta">Statistiques</button><button data-t="add">Ajouter / Importer</button></nav>
+<div class="dayb" id="days"></div>
+<div class="dayb"><select id="fy" aria-label="Année"></select><select id="fm" aria-label="Mois"></select><select id="fo" aria-label="Trier par"><option value="d">Date : plus récent d’abord</option><option value="a">Date : plus ancien d’abord</option></select><span id="nf" style="display:inline-flex;gap:6px"><input id="f1" type="number" min="1" placeholder="N°1 =" aria-label="Filtrer sur le N°1" style="width:92px"><input id="f5" type="number" min="1" placeholder="N°5 =" aria-label="Filtrer sur le N°5" style="width:92px"></span></div>
+<p class="mut" id="nfn" style="margin:-6px 0 12px"></p>
+<section id="res">
+<div class="row"><div class="card"><h2>Dernier résultat</h2><div id="last"></div></div>
+<div class="card"><h2 id="nh">Prochain tirage</h2><div class="cd" id="cd">–</div><div class="mut" id="nd"></div><p style="margin:12px 0 4px"><button class="btn" id="nfl">⚡ Flash pour le prochain tirage</button> <button class="btn" id="nfr">🎲 Hasard</button></p><div id="nflo"></div></div></div>
+<div class="card"><h2>Historique</h2><p><input id="q" placeholder="Rechercher un numéro" inputmode="numeric" style="width:100%;max-width:280px"> <span class="mut" id="cnt"></span></p>
+<div class="tw"><table><thead id="hh"></thead><tbody id="hist"></tbody></table></div><p><button class="btn hide" id="more">Voir plus</button></p></div>
+</section>
+<section id="jour" class="hide"><div class="cols" id="cols"></div></section>
+<section id="sta" class="hide">
+<div class="card" id="c1"><h2 id="ft">Fréquence des numéros</h2><div class="tw"><div id="fqw" style="min-width:420px"><div class="freq" id="fq"></div><div class="lab" id="fl"></div></div></div>
+<p class="mut"><span style="color:var(--hot)">■</span> les 5 plus sortis · <span style="color:var(--cold)">■</span> les 5 moins sortis</p></div>
+<div class="row" id="c2"><div class="card"><h2>🔥 Numéros chauds</h2><div class="balls" id="hot"></div></div><div class="card"><h2>❄️ Numéros froids</h2><div class="balls" id="cold"></div></div></div>
+<div class="card hide" id="fts"></div>
+<div class="card" id="spc"><h2 id="spt"></h2><div class="balls" id="spf"></div></div>
+<div class="card hide" id="wnc"><h2>🏆 Numéros les plus souvent vainqueurs</h2><div class="balls" id="wnf"></div></div>
+<p class="mut" id="sn"></p>
+</section>
+<section id="add" class="hide">
+<div class="card"><h2>Ajouter un résultat</h2><p><label>Date <input type="date" id="fd"></label></p>
+<div id="fnw"><p class="mut" id="fnl" style="margin-bottom:4px"></p><div class="nums" id="fn"></div></div>
+<div id="ffw" class="hide"><p><label>Grille <select id="ftype"><option>LF7</option><option>LF8</option><option>LF12</option><option selected>LF15</option></select></label></p><div id="fmat"></div></div>
+<div id="fsw"><p class="mut" id="fsl" style="margin:10px 0 4px"></p><div class="nums" id="fs"></div></div>
+<div id="fmw"><p class="mut" style="margin:10px 0 4px">2nd tirage (facultatif)</p><div class="nums" id="fm2"></div></div>
+<div id="fhw"><p><label>Hippodrome (facultatif) <input id="fh" placeholder="ex. Vincennes"></label></p></div>
+<p><button class="btn pri" id="sv">Enregistrer</button></p><div class="msg" id="m1"></div></div>
+<div class="card"><h2>Importer un historique (CSV ou ZIP)</h2><p class="mut" id="imh"></p>
+<input type="file" id="fi" accept=".csv,.txt,.zip" multiple><div class="msg" id="m2"></div></div>
+<div class="card"><h2>Sauvegarde</h2><button class="btn" id="ex">Exporter en CSV</button> <button class="btn" id="rs">Revenir aux données d’origine</button><div class="msg" id="m3"></div></div>
+</section>
+</section>
+</main>
+<footer>Données Loto, EuroMillions et EuroDreams issues des archives officielles FDJ ; autres résultats saisis ou relevés (equidia.fr, sites d’information) : à recouper sur les sites officiels (FDJ, PMU), seuls à faire foi. Jouer comporte des risques : endettement, isolement, dépendance. Appelez le 09 74 75 13 13 (appel non surtaxé).</footer>
+<script>
+(function(){
+var G={
+loto:{id:"loto",name:"Loto",ic:"🎱",days:[1,3,6],tm:[20,55],nk:5,nm:49,sk:1,sm:10,sl:"N° Chance",sid:"chance",sec:true,sub:"Lundi, mercredi et samedi · tirage vers 20h55"},
+euromillions:{id:"euromillions",name:"EuroMillions",ic:"⭐",days:[2,5],tm:[21,5],nk:5,nm:50,sk:2,sm:12,sl:"Étoiles",sub:"Mardi et vendredi · tirage vers 21h05"},
+eurodreams:{id:"eurodreams",name:"EuroDreams",ic:"💭",days:[1,4],tm:[20,30],nk:6,nm:40,sk:1,sm:5,sl:"N° Dream",sid:"dream",sub:"Lundi et jeudi · tirage à 20h30"},
+quinte:{id:"quinte",name:"Quinté+",ic:"🐎",days:[1,2,3,4,5,6,0],tm:null,nk:5,nm:24,sk:0,ord:true,hip:true,sub:"Une course par jour · 5 chevaux dans l’ordre d’arrivée",cdt:"Chaque jour",cdn:"Horaire variable selon l’hippodrome (voir pmu.fr ou equidia.fr)"},
+foot:{id:"foot",name:"Loto Foot",ic:"⚽",days:[1,2,3,4,5,6,0],tm:null,nk:0,nm:0,sk:0,sm:0,foot:true,cdt:"Chaque semaine",cdn:"Plusieurs grilles par semaine : matchs et heures limites sur fdj.fr ou l’application FDJ",sub:"Grilles LF7, LF8, LF12 et LF15 · pronostics 1 / N / 2"}};
+var ORDER=["loto","euromillions","eurodreams","quinte","foot"];
+var SEED={
+loto:[{d:"2026-11-18",n:[12,17,38,41,45],s:[7],m:[3,15,16,19,27]},{d:"2026-11-16",n:[1,6,9,32,45],s:[7],m:[16,22,28,39,46]},{d:"2026-11-14",n:[8,19,27,41,42],s:[2],m:[20,37,40,45,49]},{d:"2026-11-11",n:[4,5,14,17,29],s:[8],m:[18,30,34,35,44]},{d:"2026-11-07",n:[21,23,27,33,35],s:[4],m:[2,10,23,24,47]},{d:"2026-11-02",n:[1,3,39,42,45],s:[9],m:[6,27,32,40,46]},{d:"2026-10-31",n:[7,21,32,33,40],s:[9]},{d:"2026-10-28",n:[1,14,22,28,29],s:[3]},{d:"2026-10-26",n:[2,13,14,24,25],s:[1]},{d:"2026-10-24",n:[2,9,29,44,47],s:[10]},{d:"2026-09-19",n:[11,12,39,46,48],s:[7],m:[1,23,37,46,47]},{d:"2026-05-25",n:[19,22,27,31,49],s:[3],m:[11,22,26,41,47]},{d:"2026-09-12",n:[9,26,38,45,48],s:[1],m:[3,7,20,34,42]},{d:"2026-08-26",n:[6,13,30,32,37],s:[9],m:[4,20,21,45,46]},{d:"2026-08-19",n:[14,18,21,26,44],s:[7],m:[1,4,19,22,48]},{d:"2026-07-18",n:[10,11,24,27,36],s:[7],m:[2,8,17,22,31]},{d:"2026-06-27",n:[18,21,24,35,36],s:[3],m:[4,13,16,39,42]},{d:"2026-06-24",n:[8,26,29,32,38],s:[7],m:[25,29,31,39,42]},{d:"2026-05-09",n:[16,21,25,26,31],s:[1],m:[3,11,20,38,46]}],
+euromillions:[{d:"2026-11-17",n:[35,37,38,46,48],s:[1,2]},{d:"2026-11-10",n:[15,18,31,37,41],s:[1,5]},{d:"2026-11-06",n:[7,13,37,47,49],s:[7,11]},{d:"2026-08-28",n:[7,14,28,42,45],s:[6,9]},{d:"2026-11-13",n:[16,27,32,41,45],s:[2,12]},{d:"2026-06-26",n:[6,16,26,34,35],s:[11,12]}],
+eurodreams:[{d:"2026-11-16",n:[2,4,11,14,17,18],s:[2]},{d:"2026-11-12",n:[5,10,15,18,19,37],s:[1]},{d:"2026-11-05",n:[15,18,21,31,33,34],s:[3]}],
+quinte:[{d:"2026-11-18",n:[2,1,14,12,8],h:"Mauquenchy"},{d:"2026-11-16",n:[6,4,13,10,14]},{d:"2026-11-08",n:[7,1,10,11,4]},{d:"2026-11-06",n:[18,2,10,15,3]},{d:"2026-11-03",n:[11,13,17,15,16],h:"Paris-Vincennes"}],foot:[]};
+var D={},cur="",day=-1,yr="",mo="",sortv="d",f1="",f5="",lim=100,cl={};
+var $=function(i){return document.getElementById(i)},pad=function(n){return n<10?"0"+n:""+n};
+var MOIS=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"],JOURS=["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+var cap=function(s){return s.charAt(0).toUpperCase()+s.slice(1)};
+function fmt(iso){var p=iso.split("-"),dt=new Date(+p[0],+p[1]-1,+p[2]);return JOURS[dt.getDay()]+" "+(+p[2])+" "+MOIS[+p[1]-1]+" "+p[0]}
+function dow(iso){return new Date(iso+"T12:00:00").getDay()}
+function load(g){var a=null;try{a=JSON.parse(localStorage.getItem("rj_"+g.id))}catch(e){}
+if(!Array.isArray(a)||!a.length)return SEED[g.id].slice();
+SEED[g.id].forEach(function(z){if(!a.some(function(x){return x.d===z.d&&x.t===z.t}))a.push(z)});return a}
+function save(){try{localStorage.setItem("rj_"+cur,JSON.stringify(D[cur]))}catch(e){}}
+ORDER.forEach(function(k){D[k]=load(G[k]);D[k].sort(function(a,b){return a.d<b.d?1:-1})});
+/* boules */
+function nb(g,n,sm){return n.map(function(x,i){return '<span class="b'+(g.ord&&i===0?" w":"")+(sm?" s":"")+'">'+x+'</span>'}).join("")}
+function sp(s,sm){return s.map(function(x){return '<span class="b st'+(sm?" s":"")+'">'+x+'</span>'}).join("")}
+function both(g,d,sm){if(g.foot)return chips(d);var h='<div class="balls">'+nb(g,d.n,sm)+(g.sk&&d.s?'<span class="plus">+</span>'+sp(d.s,sm):"")+'</div>';
+if(d.m)h+='<div class="mut" style="margin:8px 0 4px">2nd tirage</div><div class="balls">'+d.m.map(function(x){return '<span class="b g'+(sm?" s":"")+'">'+x+'</span>'}).join("")+'</div>';
+if(d.h)h+='<div class="mut" style="margin-top:6px">🏟 '+d.h.replace(/</g,"&lt;")+'</div>';return h}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
+function chips(d){var c={"1":"#16a34a","N":"#667085","2":"#dc2626"};return '<div class="mut" style="margin-bottom:4px">'+esc(d.t)+' · '+d.m.length+' matchs</div><div class="balls">'+d.m.map(function(m){return '<span class="b s" style="border-color:'+(c[m[2]]||"#999")+'" title="'+esc(m[0])+' – '+esc(m[1])+'">'+m[2]+'</span>'}).join("")+'</div>'}
+function nextDate(g,k){var n=pNow();for(var i=g.tm?0:1;i<15;i++){var d=new Date(n);d.setDate(n.getDate()+i);if(d.getDay()===k&&(!g.tm||at(g,d)>n))return d}}
+function wpick(w,k){var o=[],ww=w.slice(),i,j;for(j=0;j<k;j++){var t=0;for(i=1;i<ww.length;i++)t+=ww[i];var r=Math.random()*t;for(i=1;i<ww.length;i++){r-=ww[i];if(r<=0)break}if(i>=ww.length)i=ww.length-1;o.push(i);ww[i]=0}return o}
+var FN={LF7:7,LF8:8,LF12:12,LF15:15};
+function flashHTML(k,mode,ty){var g=G[cur],a=D[cur].filter(function(x){return dow(x.d)===k}),nd=nextDate(g,k),dt=nd?fmt(iso(nd)):"prochain "+JOURS[k],out,i;
+var base=mode==="r"?"Hasard pur (sans tenir compte des anciens résultats).":"Basé sur "+a.length+" résultat"+(a.length>1?"s":"")+" du "+JOURS[k]+" uniquement (pondération par fréquence ce jour-là).";
+if(g.foot){var n=FN[ty]||15,c={"1":1,"N":1,"2":1};if(mode!=="r")a.forEach(function(x){x.m.forEach(function(m){if(c[m[2]]!==undefined)c[m[2]]++})});
+var tot=c["1"]+c["N"]+c["2"],pk=[];for(i=0;i<n;i++){var r=Math.random()*tot;pk.push(r<c["1"]?"1":r<c["1"]+c["N"]?"N":"2")}
+out='<div class="mut">'+ty+' · '+dt+'</div><div class="balls">'+pk.map(function(p,j){return '<span style="text-align:center"><span class="b s">'+p+'</span><div class="mut" style="font-size:.7rem">'+(j+1)+'</div></span>'}).join("")+'</div>'}
+else{var f=[],sf=[];for(i=0;i<=g.nm;i++)f.push(1);for(i=0;i<=g.sm;i++)sf.push(1);
+if(mode!=="r")a.forEach(function(x){x.n.forEach(function(v){f[v]++});(x.s||[]).forEach(function(v){sf[v]++})});
+var n2=wpick(f,g.nk);if(!g.ord)n2=sortN(n2);var s2=g.sk?sortN(wpick(sf,g.sk)):[];
+out='<div class="mut">'+dt+'</div><div class="balls">'+nb(g,n2)+(g.sk?'<span class="plus">+</span>'+sp(s2):"")+'</div>'}
+return '<div style="border:1px dashed var(--bd);border-radius:10px;padding:10px">'+out+'<div class="mut" style="margin-top:6px;font-size:.8rem">'+base+' Le hasard n’a pas de mémoire : ce flash n’augmente pas vos chances de gagner.</div></div>'}
+function flashUI(k){var g=G[cur];return '<div style="margin-bottom:10px">'+(g.foot?'<select id="ft'+k+'" aria-label="Type de grille"><option>LF7</option><option>LF8</option><option>LF12</option><option selected>LF15</option></select> ':'')+'<button class="btn" data-fl="'+k+'">⚡ Flash du prochain '+JOURS[k]+'</button> <button class="btn" data-fr="'+k+'" title="Sans tenir compte des anciens résultats">🎲 Hasard</button><div id="fl'+k+'" style="margin-top:8px"></div></div>'}
+/* temps (Paris) */
+function pNow(){return new Date(new Date().toLocaleString("en-US",{timeZone:"Europe/Paris"}))}
+function iso(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function at(g,d){var x=new Date(d);x.setHours(g.tm[0],g.tm[1],0,0);return x}
+function nextD(g){if(!g.tm)return null;var n=pNow();for(var i=0;i<9;i++){var d=new Date(n);d.setDate(n.getDate()+i);if(g.days.indexOf(d.getDay())>-1&&at(g,d)>n)return at(g,d)}}
+function lastP(g,k){var n=pNow();for(var i=g.tm?0:1;i<15;i++){var d=new Date(n);d.setDate(n.getDate()-i);var ok=k===undefined?g.days.indexOf(d.getDay())>-1:d.getDay()===k;if(ok&&(!g.tm||at(g,d)<=n))return d}}
+function cdTxt(g){var nd=nextD(g);if(!nd)return[g.cdt||"Chaque jour",g.cdn||""];
+var s=Math.max(0,Math.floor((nd-pNow())/1000)),j=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);
+return[(j?j+" j ":"")+pad(h)+":"+pad(m)+":"+pad(s%60),fmt(iso(nd))+" à "+g.tm[0]+"h"+pad(g.tm[1])]}
+function tick(){if(cur){var t=cdTxt(G[cur]);$("cd").textContent=t[0];$("nd").textContent=t[1]}
+Array.prototype.forEach.call(document.querySelectorAll("[data-cd]"),function(e){e.textContent=cdTxt(G[e.dataset.cd])[0]})}
+/* accueil */
+function homeRender(){$("hc").innerHTML=ORDER.map(function(k){var g=G[k],l=D[k][0];
+return '<div class="card gc"><h2><span>'+g.ic+' '+g.name+'</span><a class="btn pri" href="#'+k+'" style="text-decoration:none">Ouvrir</a></h2><div class="mut" style="margin-bottom:8px">'+g.sub+'</div>'+
+(l?'<div class="mut" style="margin-bottom:6px">Dernier résultat : '+fmt(l.d)+'</div>'+both(g,l,true):"<p class=\"mut\">Aucun résultat.</p>")+
+'<div class="mut" style="margin-top:10px">Prochain : <b data-cd="'+k+'"></b></div></div>'}).join("");tick()}
+/* routage */
+function nav(){$("gm").innerHTML='<a href="#"'+(cur?"":' class="on"')+'>🏠 Accueil</a>'+ORDER.map(function(k){return '<a href="#'+k+'"'+(cur===k?' class="on"':"")+'>'+G[k].ic+" "+G[k].name+'</a>'}).join("")}
+function route(){var h=location.hash.replace("#","");cur=G[h]?h:"";nav();
+$("home").classList.toggle("hide",!!cur);$("game").classList.toggle("hide",!cur);
+if(!cur){homeRender();return}
+day=-1;yr="";mo="";sortv="d";f1="";f5="";$("f1").value="";$("f5").value="";lim=100;cl={};$("q").value="";buildForm();tab("res");render()}
+window.addEventListener("hashchange",route);
+/* filtres */
+function fym(a){return a.filter(function(x){return (!yr||x.d.slice(0,4)===yr)&&(!mo||x.d.slice(5,7)===mo)&&(!f1||(x.n&&x.n[0]===+f1))&&(!f5||(x.n&&x.n[4]===+f5))})}
+function pool(){var a=D[cur];if(day>=0)a=a.filter(function(x){return dow(x.d)===day});return fym(a)}
+function ord(a){var v=sortv;if(v==="d")return a;if(v==="a")return a.slice().reverse();var p=+v.charAt(1)-1,dir=v.charAt(2)==="a"?1:-1;return a.slice().sort(function(x,y){return ((x.n[p]-y.n[p])*dir)||(x.d<y.d?1:-1)})}
+function sortOpts(){var g=G[cur],h='<option value="d">Date : plus récent d’abord</option><option value="a">Date : plus ancien d’abord</option>';
+if(!g.foot)for(var p=1;p<=g.nk;p++)h+='<option value="p'+p+'a">N°'+p+' : croissant ↑</option><option value="p'+p+'d">N°'+p+' : décroissant ↓</option>';
+$("fo").innerHTML=h;$("fo").value=sortv}
+function ymBar(){var ys=[];D[cur].forEach(function(x){var y=x.d.slice(0,4);if(ys.indexOf(y)<0)ys.push(y)});ys.sort().reverse();
+$("fy").innerHTML='<option value="">Toutes les années</option>'+ys.map(function(y){return '<option>'+y+'</option>'}).join("");if(ys.indexOf(yr)<0)yr="";$("fy").value=yr;
+$("fm").innerHTML='<option value="">Tous les mois</option>'+MOIS.map(function(m,i){return '<option value="'+pad(i+1)+'">'+cap(m)+'</option>'}).join("");$("fm").value=mo;sortOpts()}
+function dayBar(){var g=G[cur],B=fym(D[cur]),c={};g.days.forEach(function(k){c[k]=0});B.forEach(function(x){var k=dow(x.d);if(c[k]!==undefined)c[k]++});
+$("days").innerHTML='<button data-d="-1" class="'+(day<0?"on":"")+'">Tous ('+B.length+')</button>'+g.days.map(function(k){return '<button data-d="'+k+'" class="'+(day===k?"on":"")+'">'+cap(JOURS[k])+" ("+c[k]+")</button>"}).join("")}
+$("days").onclick=function(e){var d=e.target.dataset.d;if(d===undefined)return;day=+d;lim=100;dayBar();hist();stats()};
+$("fy").onchange=$("fm").onchange=$("fo").onchange=$("f1").oninput=$("f5").oninput=function(){yr=$("fy").value;mo=$("fm").value;sortv=$("fo").value;f1=$("f1").value.trim();f5=$("f5").value.trim();lim=100;cl={};dayBar();hist();stats();cols()};
+$("more").onclick=function(){lim+=100;hist()};$("q").oninput=function(){hist()};
+function nextK(){var nd=nextD(G[cur]);return nd?nd.getDay():null}
+$("nfl").onclick=function(){var k=nextK();if(k!==null)$("nflo").innerHTML=flashHTML(k,"f","")};
+$("nfr").onclick=function(){var k=nextK();if(k!==null)$("nflo").innerHTML=flashHTML(k,"r","")};
+/* affichage jeu */
+function render(){var g=G[cur],l=D[cur][0];D[cur].sort(function(a,b){return a.d<b.d?1:-1});l=D[cur][0];
+$("last").innerHTML=l?'<div class="mut" style="margin-bottom:8px">'+fmt(l.d)+'</div>'+both(g,l):"Aucun résultat";
+$("nh").textContent=g.tm?"Prochain tirage":g.foot?"Prochaines grilles":"Prochaine course";$("nfl").parentNode.classList.toggle("hide",!g.tm);$("nflo").innerHTML="";
+$("q").placeholder=g.foot?"Rechercher une équipe":"Rechercher un numéro";$("nf").style.display=g.foot?"none":"inline-flex";$("nfn").textContent=g.foot?"":g.ord?"Tri et filtre par place : N°1 = cheval arrivé 1er, N°5 = cheval arrivé 5e.":"Numéros classés du plus petit au plus grand : N°1 = le plus petit, N°"+g.nk+" = le plus grand. Triez ou filtrez sur N°1 et N°5.";
+ymBar();dayBar();hist();stats();cols();banner();tick()}
+function banner(){var g=G[cur],lp=lastP(g),b=$("banner");if(g.foot||!lp){b.innerHTML="";return}var d=iso(lp);
+if(D[cur].some(function(x){return x.d===d})){b.innerHTML="";return}
+b.innerHTML='<div class="banner"><span>🔔 Le résultat du <b>'+fmt(d)+'</b> n’est pas encore enregistré.</span><button class="btn pri" id="bgo">Ajouter</button></div>';
+$("bgo").onclick=function(){tab("add");$("fd").value=d}}
+function histFoot(q,f){if(q){var s=q.toLowerCase();f=f.filter(function(x){return x.m.some(function(m){return (m[0]+" "+m[1]).toLowerCase().indexOf(s)>-1})})}
+f=ord(f);$("cnt").textContent=f.length+" grille"+(f.length>1?"s":"");$("more").classList.toggle("hide",f.length<=lim);
+$("hh").innerHTML='<tr><th>Date</th><th>Grille</th><th>Résultats</th><th>Matchs</th></tr>';
+$("hist").innerHTML=f.slice(0,lim).map(function(x){return '<tr><td>'+fmt(x.d)+'</td><td>'+esc(x.t)+'</td><td>'+chips(x).replace(/^<div class="mut"[^>]*>[^<]*<\/div>/,"")+'</td><td><details><summary>Voir</summary>'+x.m.map(function(m,i){return (i+1)+". "+esc(m[0])+(m[1]?" – "+esc(m[1]):"")+" : <b>"+m[2]+"</b>"}).join("<br>")+'</details></td></tr>'}).join("")}
+function hist(){var g=G[cur],q=$("q").value.trim(),f=pool();if(g.foot)return histFoot(q,f);
+if(q&&!isNaN(+q)){var v=+q;f=f.filter(function(x){return x.n.indexOf(v)>-1||(x.s||[]).indexOf(v)>-1||(x.m||[]).indexOf(v)>-1})}
+f=ord(f);$("cnt").textContent=f.length+" résultat"+(f.length>1?"s":"");$("more").classList.toggle("hide",f.length<=lim);
+$("hh").innerHTML='<tr><th>Date</th><th>'+(g.ord?"Arrivée (1er → 5e)":"Numéros")+'</th>'+(g.sk?'<th>'+g.sl+'</th>':"")+(g.sec?'<th>2nd tirage</th>':"")+(g.hip?'<th>Hippodrome</th>':"")+'</tr>';
+$("hist").innerHTML=f.slice(0,lim).map(function(x){return '<tr><td>'+fmt(x.d)+'</td><td><div class="balls">'+nb(g,x.n,true)+'</div></td>'+(g.sk?'<td><div class="balls">'+sp(x.s||[],true)+'</div></td>':"")+
+(g.sec?'<td>'+(x.m?'<div class="balls">'+x.m.map(function(y){return '<span class="b g s">'+y+'</span>'}).join("")+'</div>':'<span class="mut">–</span>')+'</td>':"")+(g.hip?'<td>'+(x.h?x.h.replace(/</g,"&lt;"):'<span class="mut">–</span>')+'</td>':"")+'</tr>'}).join("")}
+function cols(){var g=G[cur];$("cols").innerHTML=g.days.map(function(k){var a=ord(fym(D[cur].filter(function(x){return dow(x.d)===k}))),L=cl[k]||10;
+var rows=a.slice(0,L).map(function(x){return '<div style="padding:8px 0;border-bottom:1px solid var(--bd)"><div class="mut">'+fmt(x.d)+'</div>'+both(g,x,true)+'</div>'}).join("")||'<p class="mut">Aucun résultat enregistré.</p>';
+return '<div class="card"><h2>'+cap(JOURS[k])+' <span class="mut">('+a.length+')</span></h2><button class="btn pri" data-add="'+k+'" style="width:100%;margin-bottom:8px">+ Ajouter un résultat du '+JOURS[k]+'</button>'+flashUI(k)+rows+(a.length>L?'<p><button class="btn" data-more="'+k+'">Voir plus</button></p>':"")+'</div>'}).join("")}
+$("cols").onclick=function(e){var t=e.target;if(t.dataset.more){cl[t.dataset.more]=(cl[t.dataset.more]||10)+10;cols()}
+if(t.dataset.add){var lp=lastP(G[cur],+t.dataset.add);tab("add");$("fd").value=lp?iso(lp):""}
+if(t.dataset.fl!==undefined||t.dataset.fr!==undefined){var kk=+(t.dataset.fl!==undefined?t.dataset.fl:t.dataset.fr);$("fl"+kk).innerHTML=flashHTML(kk,t.dataset.fr!==undefined?"r":"f",$("ft"+kk)?$("ft"+kk).value:"")}};
+function statsFoot(){var P=pool(),c={"1":0,"N":0,"2":0},t=0;P.forEach(function(x){x.m.forEach(function(m){if(c[m[2]]!==undefined){c[m[2]]++;t++}})});
+$("fts").innerHTML='<h2>Répartition des résultats (1 / N / 2)</h2>'+(t?["1","N","2"].map(function(r){var p=Math.round(c[r]/t*100);return '<div style="margin:8px 0"><b>'+r+'</b> · '+c[r]+' matchs ('+p+' %)<div style="background:var(--bd);border-radius:6px;overflow:hidden"><div style="width:'+p+'%;background:var(--bar);height:10px"></div></div></div>'}).join(""):'<p class="mut">Aucune grille enregistrée.</p>')+'<p class="mut">1 = victoire de l’équipe à domicile, N = match nul, 2 = victoire à l’extérieur.</p>';
+$("sn").textContent="Calculé sur "+P.length+" grille"+(P.length>1?"s":"")+(day>=0?" du "+JOURS[day]:"")+(yr||mo||f1||f5?" (période filtrée)":"")+". Les résultats passés ne permettent pas de prédire les prochains matchs."}
+function stats(){var g=G[cur];["c1","c2","spc","wnc"].forEach(function(id){$(id).classList.toggle("hide",!!g.foot)});$("fts").classList.toggle("hide",!g.foot);if(g.foot)return statsFoot();var P=pool(),n=g.nm,f=[],wf=[],sf=[],i;for(i=0;i<=n;i++){f.push(0);wf.push(0)}for(i=0;i<=g.sm;i++)sf.push(0);
+P.forEach(function(x){x.n.forEach(function(k){f[k]++});if(g.ord&&x.n[0])wf[x.n[0]]++;(x.s||[]).forEach(function(k){sf[k]++})});
+var idx=[];for(i=1;i<=n;i++)idx.push(i);
+var by=idx.slice().sort(function(a,b){return f[b]-f[a]||a-b}),hot=by.slice(0,5),cold=by.slice(-5).reverse(),mx=Math.max.apply(null,f.slice(1))||1;
+$("ft").textContent="Fréquence des numéros (1 à "+n+")";$("fqw").style.minWidth=(n*13)+"px";
+$("fq").style.gridTemplateColumns=$("fl").style.gridTemplateColumns="repeat("+n+",1fr)";
+$("fq").innerHTML=idx.map(function(k){var c=hot.indexOf(k)>-1?"h":cold.indexOf(k)>-1?"k":"";return '<div class="'+c+'" style="height:'+Math.max(2,f[k]/mx*100)+'%" title="N°'+k+' : '+f[k]+' fois"></div>'}).join("");
+$("fl").innerHTML=idx.map(function(k){return "<span>"+k+"</span>"}).join("");
+$("hot").innerHTML=hot.map(function(k){return '<span class="b" title="'+f[k]+' fois">'+k+'</span>'}).join("");
+$("cold").innerHTML=cold.map(function(k){return '<span class="b" title="'+f[k]+' fois">'+k+'</span>'}).join("");
+$("spc").classList.toggle("hide",!g.sk);$("spt").textContent=g.sl+" (1 à "+g.sm+")";
+var ss=[];for(i=1;i<=g.sm;i++)ss.push(i);
+$("spf").innerHTML=ss.map(function(s){return '<span style="text-align:center"><span class="b st">'+s+'</span><div class="mut">'+sf[s]+'×</div></span>'}).join("");
+$("wnc").classList.toggle("hide",!g.ord);
+if(g.ord){var wn=idx.filter(function(k){return wf[k]>0}).sort(function(a,b){return wf[b]-wf[a]||a-b}).slice(0,8);
+$("wnf").innerHTML=wn.length?wn.map(function(k){return '<span style="text-align:center"><span class="b w">'+k+'</span><div class="mut">'+wf[k]+'×</div></span>'}).join(""):'<span class="mut">Pas encore de données.</span>'}
+$("sn").textContent="Calculé sur "+P.length+" résultat"+(P.length>1?"s":"")+(day>=0?" du "+JOURS[day]:"")+(yr||mo||f1||f5?" (période filtrée)":"")+". Chaque tirage est indépendant : les statistiques décrivent le passé et ne permettent pas de prédire les prochains résultats."}
+function tab(t){["res","jour","sta","add"].forEach(function(s){$(s).classList.toggle("hide",s!==t)});Array.prototype.forEach.call($("tabs").children,function(b){b.classList.toggle("on",b.dataset.t===t)})}
+$("tabs").onclick=function(e){if(e.target.dataset.t)tab(e.target.dataset.t)};
+/* formulaire */
+function mk(id,n,mx,p){$(id).innerHTML="";for(var k=1;k<=n;k++){var e=document.createElement("input");e.type="number";e.min=1;e.max=mx;e.placeholder=p+(n>1?k:"");e.setAttribute("aria-label",p+k);$(id).appendChild(e)}}
+function mkFoot(){var n=FN[$("ftype").value]||15,h="";for(var i=1;i<=n;i++)h+='<div style="display:flex;gap:6px;margin:4px 0;flex-wrap:wrap;align-items:center"><span class="mut" style="width:22px">'+i+'</span><input data-h placeholder="Domicile" style="width:140px"><input data-a placeholder="Extérieur" style="width:140px"><select data-r aria-label="Résultat du match '+i+'"><option value="">?</option><option>1</option><option>N</option><option>2</option></select></div>';$("fmat").innerHTML=h}
+$("ftype").onchange=mkFoot;
+function saveFoot(d){if(!d)return msg("m1","Choisissez une date.");var t=$("ftype").value,rows=$("fmat").children,m=[],i;
+for(i=0;i<rows.length;i++){var r=rows[i].querySelector("[data-r]").value;if(!r)return msg("m1","Choisissez le résultat (1, N ou 2) du match "+(i+1)+".");
+m.push([rows[i].querySelector("[data-h]").value.trim()||"Match "+(i+1),rows[i].querySelector("[data-a]").value.trim(),r])}
+if(D[cur].some(function(x){return x.d===d&&x.t===t}))return msg("m1","La grille "+t+" de cette date est déjà enregistrée.");
+D[cur].push({d:d,t:t,m:m});save();render();msg("m1","Grille "+t+" du "+fmt(d)+" ajoutée ✔",true);buildForm()}
+function exFoot(){var t="date_de_tirage;grille;match;domicile;exterieur;resultat\n"+D[cur].map(function(x){var p=x.d.split("-");return x.m.map(function(m,i){return [p[2]+"/"+p[1]+"/"+p[0],x.t,i+1,m[0],m[1],m[2]].join(";")}).join("\n")}).join("\n");
+try{var u=URL.createObjectURL(new Blob([t],{type:"text/csv"})),a=document.createElement("a");a.href=u;a.download="loto-foot-resultats.csv";a.click();msg("m3","Export lancé.",true)}catch(e){msg("m3","L’export est bloqué ici. Ouvrez la page publiée.")}}
+function buildForm(){var g=G[cur];$("fnw").classList.toggle("hide",!!g.foot);$("ffw").classList.toggle("hide",!g.foot);$("fi").style.display=g.foot?"none":"";
+if(g.foot){mkFoot();["fsw","fmw","fhw"].forEach(function(i){$(i).classList.add("hide")});$("fd").value="";$("imh").textContent="Pas de fichier officiel pour ce jeu : saisissez les grilles une par une (matchs et résultats 1 / N / 2).";return}
+$("fnl").textContent=g.ord?"Arrivée dans l’ordre : 1er, 2e, 3e, 4e, 5e (numéros 1 à "+g.nm+")":g.nk+" numéros (1 à "+g.nm+")";
+mk("fn",g.nk,g.nm,g.ord?"":"N°");$("fsw").classList.toggle("hide",!g.sk);if(g.sk){$("fsl").textContent=g.sl+" ("+g.sk+", de 1 à "+g.sm+")";mk("fs",g.sk,g.sm,"")}
+$("fmw").classList.toggle("hide",!g.sec);if(g.sec)mk("fm2",5,49,"");$("fhw").classList.toggle("hide",!g.hip);$("fh").value="";$("fd").value="";
+$("imh").textContent=g.ord?"Colonnes reconnues : date (ou date_de_tirage), puis arrivee (ex. 6-4-13-10-14) ou boule_1 … boule_5, et hippodrome (facultatif). Doublons ignorés.":
+"Importez les fichiers de la page « Historique » du jeu sur fdj.fr (CSV ou ZIP, plusieurs possibles). Colonnes reconnues : date_de_tirage, boule_1 … boule_"+g.nk+(g.id==="euromillions"?", etoile_1, etoile_2":g.id==="eurodreams"?", numero_dream":", numero_chance")+". Doublons ignorés."}
+function msg(id,t,ok){var e=$(id);e.textContent=t;e.className="msg "+(ok?"good":"err")}
+function vals(id){return Array.prototype.map.call($(id).children,function(x){return parseInt(x.value,10)})}
+function okSet(a,k,mx){return a.length===k&&a.every(function(x){return x>=1&&x<=mx})&&new Set(a).size===k}
+function sortN(a){return a.slice().sort(function(x,y){return x-y})}
+$("sv").onclick=function(){var g=G[cur],d=$("fd").value,n=vals("fn"),s=g.sk?vals("fs"):[],m=g.sec?vals("fm2"):[];if(g.foot)return saveFoot(d);
+if(!d)return msg("m1","Choisissez une date.");
+if(!okSet(n,g.nk,g.nm))return msg("m1","Il faut "+g.nk+" numéros différents compris entre 1 et "+g.nm+".");
+if(g.sk&&!okSet(s,g.sk,g.sm))return msg("m1",g.sl+" : "+g.sk+" valeur(s) différente(s) entre 1 et "+g.sm+".");
+var hasM=g.sec&&!m.every(isNaN);if(hasM&&!okSet(m,5,49))return msg("m1","2nd tirage : 5 numéros différents entre 1 et 49, ou laissez vide.");
+if(D[cur].some(function(x){return x.d===d}))return msg("m1","Cette date est déjà enregistrée.");
+var o={d:d,n:g.ord?n:sortN(n)};if(g.sk)o.s=sortN(s);if(hasM)o.m=sortN(m);var h=$("fh").value.trim();if(g.hip&&h)o.h=h;
+D[cur].push(o);save();render();msg("m1","Résultat du "+fmt(d)+" ajouté ✔",true);buildForm()};
+/* import */
+function pd(s){s=(s||"").trim();var m;if(m=s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/))return m[3]+"-"+m[2]+"-"+m[1];if(m=s.match(/^(\d{4})-(\d{2})-(\d{2})/))return m[1]+"-"+m[2]+"-"+m[3];if(m=s.match(/^(\d{4})(\d{2})(\d{2})$/))return m[1]+"-"+m[2]+"-"+m[3];return null}
+function importText(t){var g=G[cur],L=String(t).split(/\r?\n/).filter(Boolean);if(L.length<2)throw 0;
+var sep=L[0].indexOf(";")>-1?";":",",H=L[0].toLowerCase().split(sep).map(function(x){return x.trim()});
+var di=H.findIndex(function(x){return x.indexOf("date")>-1&&x.indexOf("forclusion")<0}),ks=[];for(var k=1;k<=g.nk;k++)ks.push(k);
+var bi=ks.map(function(k){return H.findIndex(function(x){return x==="boule_"+k||x==="n"+k})}),ai=g.ord?H.findIndex(function(x){return x.indexOf("arriv")>-1}):-1;
+var si=[];if(g.id==="euromillions")si=[1,2].map(function(k){return H.findIndex(function(x){return x==="etoile_"+k||x==="star_"+k})});else if(g.sk)si=[H.findIndex(function(x){return x.indexOf(g.sid)>-1})];
+var mi=g.sec?ks.map(function(k){return H.findIndex(function(x){return x.indexOf("boule_"+k)===0&&x.indexOf("second")>-1})}):[],hi=g.hip?H.findIndex(function(x){return x.indexOf("hippodrome")>-1}):-1;
+if(di<0||(bi.some(function(x){return x<0})&&ai<0)||si.some(function(x){return x<0}))throw 0;
+var add=0,skip=0;
+L.slice(1).forEach(function(ln){var p=ln.split(sep),d=pd(p[di]);if(!d)return;
+var n=ai>=0?(String(p[ai]).match(/\d+/g)||[]).map(Number).slice(0,g.nk):bi.map(function(i){return parseInt(p[i],10)});
+var s=si.map(function(i){return parseInt(p[i],10)});
+if(!okSet(n,g.nk,g.nm)||(g.sk&&!okSet(s,g.sk,g.sm)))return;
+var ex=D[cur].filter(function(x){return x.d===d})[0],mm=mi.length&&mi.every(function(i){return i>=0})?mi.map(function(i){return parseInt(p[i],10)}):null;
+if(mm&&!okSet(mm,5,49))mm=null;
+if(ex){if(mm&&!ex.m)ex.m=sortN(mm);skip++;return}
+var o={d:d,n:g.ord?n:sortN(n)};if(g.sk)o.s=sortN(s);if(mm)o.m=sortN(mm);if(hi>=0&&p[hi]&&p[hi].trim())o.h=p[hi].trim();
+D[cur].push(o);add++});return[add,skip]}
+function rf(f){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=rej;r.readAsText(f,"utf-8")})}
+$("fi").onchange=async function(){var files=Array.prototype.slice.call(this.files),inp=this;if(!files.length)return;var add=0,skip=0,bad=0,tx=[];
+try{for(var i=0;i<files.length;i++){var f=files[i];
+if(/\.zip$/i.test(f.name)){if(!window.JSZip)throw 0;var z=await JSZip.loadAsync(f),nm=Object.keys(z.files).filter(function(n){return /\.(csv|txt)$/i.test(n)&&!z.files[n].dir});for(var j=0;j<nm.length;j++)tx.push(await z.files[nm[j]].async("string"))}
+else tx.push(await rf(f))}
+tx.forEach(function(t){try{var r=importText(t);add+=r[0];skip+=r[1]}catch(e){bad++}});save();render();
+msg("m2",add+" résultat(s) ajouté(s), "+skip+" déjà présent(s)"+(bad?", "+bad+" fichier(s) non reconnu(s)":"")+".",add>0||!bad)}
+catch(e){msg("m2","Lecture impossible. Vérifiez le fichier (CSV ou ZIP).")}inp.value=""};
+$("ex").onclick=function(){var g=G[cur],h=["date_de_tirage"],i;if(g.foot)return exFoot();for(i=1;i<=g.nk;i++)h.push("boule_"+i);
+if(g.id==="euromillions")h.push("etoile_1","etoile_2");else if(g.sk)h.push(g.id==="eurodreams"?"numero_dream":"numero_chance");
+if(g.sec)for(i=1;i<=5;i++)h.push("boule_"+i+"_second_tirage");if(g.hip)h.push("hippodrome");
+var t=h.join(";")+"\n"+D[cur].map(function(x){var p=x.d.split("-"),r=[p[2]+"/"+p[1]+"/"+p[0]].concat(x.n,x.s||[]);
+if(g.sec)r=r.concat(x.m||["","","","",""]);if(g.hip)r.push(x.h||"");return r.join(";")}).join("\n");
+try{var u=URL.createObjectURL(new Blob([t],{type:"text/csv"})),a=document.createElement("a");a.href=u;a.download=g.id+"-resultats.csv";a.click();msg("m3","Export lancé.",true)}catch(e){msg("m3","L’export est bloqué ici. Ouvrez la page publiée.")}};
+$("rs").onclick=function(){if(confirm("Effacer vos ajouts pour ce jeu et revenir aux données d’origine ?")){D[cur]=SEED[cur].slice();save();render();msg("m3","Données d’origine restaurées.",true)}};
+/* ---- mise à jour automatique depuis /api/results (archives officielles FDJ) ---- */
+var REMOTE=["loto","euromillions","eurodreams"],lastSync=null,syncing=false;
+function saveK(k){try{localStorage.setItem("rj_"+k,JSON.stringify(D[k]))}catch(e){}}
+function setSync(t){["sync","sync2"].forEach(function(i){if($(i))$(i).textContent=t})}
+async function syncAll(){if(syncing)return;syncing=true;setSync("🔄 Synchronisation avec les archives officielles FDJ…");var added=0,fail=0;
+for(var i=0;i<REMOTE.length;i++){var k=REMOTE[i];
+try{var r=await fetch("/api/results?game="+k,{cache:"no-store"});if(!r.ok)throw 0;var j=await r.json();var have={};
+D[k].forEach(function(x){have[x.d]=x});
+(j.draws||[]).forEach(function(x){var e=have[x.d];if(!e){D[k].push(x);have[x.d]=x;added++}else if(x.m&&!e.m){e.m=x.m}});
+D[k].sort(function(a,b){return a.d<b.d?1:-1});saveK(k)}catch(e){fail++}}
+syncing=false;lastSync=new Date();
+setSync(fail===REMOTE.length?"⚠️ Synchronisation impossible (hors ligne ou archives FDJ indisponibles) : données enregistrées affichées.":"✅ Synchronisé avec les archives officielles FDJ à "+pad(lastSync.getHours())+"h"+pad(lastSync.getMinutes())+(added?" · "+added+" nouveau(x) résultat(s)":" · à jour")+(fail?" · "+fail+" jeu(x) en échec":"")+".");
+if(!cur)homeRender();else if(REMOTE.indexOf(cur)>-1)render()}
+$("syncb").onclick=syncAll;
+route();setInterval(function(){tick();if(cur)banner()},1000);
+syncAll();setInterval(syncAll,30*60*1000);
+document.addEventListener("visibilitychange",function(){if(!document.hidden&&(!lastSync||Date.now()-lastSync>600000))syncAll()});
+})();
+</script>
+</body>
+</html>

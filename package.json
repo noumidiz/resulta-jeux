@@ -1,0 +1,8 @@
+{
+  "name": "resulta-jeux",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "RESULTA JEUX : résultats Loto, EuroMillions, EuroDreams, Quinté+ et Loto Foot, avec mise à jour automatique depuis les archives officielles FDJ.",
+  "dependencies": { "fflate": "^0.8.2" }
+}
